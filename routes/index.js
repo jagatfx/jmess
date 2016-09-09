@@ -20,7 +20,7 @@ router.post('/webhook/', function (req, res) {
   let messagingEvents = req.body.entry[0].messaging;
   console.log('messagingEvents:' + JSON.stringify(messagingEvents));
   for (let i = 0; i < messagingEvents.length; i++) {
-    let event = req.body.entry[0].messaging[i];
+    let event = messagingEvents[i];
     let sender = event.sender.id;
     if (event.message && event.message.text) {
       sendTextMessage(sender, 'Text received, echo: ' + event.message.text.substring(0, 200));
@@ -30,20 +30,21 @@ router.post('/webhook/', function (req, res) {
 });
 
 function sendTextMessage(sender, text) {
-  let messageData = { text:text };
   request({
     url: 'https://graph.facebook.com/v2.6/me/messages',
     qs: { access_token: fbtoken },
     method: 'POST',
     json: {
       recipient: { id: sender },
-      message: messageData,
+      message: { text: text },
     }
   }, function(error, response, body) {
     if (error) {
       console.log('Error sending messages: ', error);
     } else if (response.body.error) {
       console.log('Error: ', response.body.error);
+    } else {
+      console.log('body:' + JSON.stringify(response.body));
     }
   });
 }
