@@ -16,13 +16,14 @@ router.get('/webhook/', function (req, res) {
 });
 
 router.post('/webhook/', function (req, res) {
-  let messaging_events = req.body.entry[0].messaging;
-  for (let i = 0; i < messaging_events.length; i++) {
+  console.log('/webhook/ POST');
+  let messagingEvents = req.body.entry[0].messaging;
+  console.log('messagingEvents:' + JSON.stringify(messagingEvents));
+  for (let i = 0; i < messagingEvents.length; i++) {
     let event = req.body.entry[0].messaging[i];
     let sender = event.sender.id;
     if (event.message && event.message.text) {
-      let text = event.message.text;
-      sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200));
+      sendTextMessage(sender, 'Text received, echo: ' + event.message.text.substring(0, 200));
     }
   }
   res.sendStatus(200);
